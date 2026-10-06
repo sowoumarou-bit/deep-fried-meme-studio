@@ -1,7 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import {
   Alert,
-  Dimensions,
   Image,
   Pressable,
   ScrollView,
@@ -13,11 +12,11 @@ import {
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
+import ViewShot from 'react-native-view-shot';
 import { captureRef } from 'react-native-view-shot';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
-const { width } = Dimensions.get('window');
 const EMOJIS = [
   '😂', '💀', '🔥', '💯', '👀', '😎', '🤣', '😭', '🤔', '👽',
   '💥', '⚡', '🌈', '✨', '💫', '🎯', '🏆', '👑', '💎', '🚀',
@@ -154,11 +153,7 @@ export default function App() {
         <View style={styles.previewSection}>
           <ViewShot ref={previewRef} style={styles.previewWrapper}>
             {imageUri ? (
-              <Image
-                source={{ uri: imageUri }}
-                style={styles.previewImage}
-                resizeMode="cover"
-              />
+              <Image source={{ uri: imageUri }} style={styles.previewImage} resizeMode="cover" />
             ) : (
               <View style={styles.placeholder}>
                 <Text style={styles.placeholderText}>Aucune image</Text>
@@ -304,7 +299,7 @@ export default function App() {
             <View style={styles.stickerBar}>
               {stickerList.map((sticker) => (
                 <Pressable
-                  key={`bar-${sticker.id}`} 
+                  key={`bar-${sticker.id}`}
                   onPress={() => setSelectedStickerId(sticker.id)}
                   onLongPress={() => removeSticker(sticker.id)}
                   style={[styles.stickerChip, selectedStickerId === sticker.id && styles.stickerChipSelected]}
