@@ -1,7 +1,44 @@
-node_modules/
+# Expo
 .expo/
 .expo-shared/
 dist/
-build/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pbxproj
+*.xcworkspace
+
+# Dependencies
+node_modules/
+.yarn/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
-npm-debug.log*
+
+# Build
+build/
+dist/
+.next/
+out/
+
+# Sensitive files
+service-account-key.json
+.credentials/
+*.keystore
+
+# OS
+Thumbs.db
+.DS_Store

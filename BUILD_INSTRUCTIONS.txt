@@ -1,0 +1,145 @@
+════════════════════════════════════════════════════════════════════════════════
+ 🔥 DEEP-FRIED MÈME STUDIO - BUILD DE PRODUCTION
+════════════════════════════════════════════════════════════════════════════════
+
+✅ ÉTAPE 1 : PRÉREQUIS
+
+  [ ] Node.js 16+ installé : node --version
+  [ ] npm à jour : npm --version
+  [ ] Compte Expo créé : https://expo.dev
+  [ ] EAS CLI installé : npm install -g eas-cli
+  [ ] EAS credentials configurés : eas login
+  [ ] Git repository initialisé : git status
+
+────────────────────────────────────────────────────────────────────────────────
+
+✅ ÉTAPE 2 : PRÉPARATION DU CODE
+
+  1. Brancher sur feature/premium-ui-video-recording :
+     git checkout feature/premium-ui-video-recording
+
+  2. Mettre à jour package.json (optionnel) :
+     npm install
+
+  3. Vérifier la version dans app.json :
+     - "version": "2.0.0"
+     - "android": { "versionCode": 2 }
+
+  4. Nettoyer les fichiers obsolètes :
+     rm -rf node_modules/.cache
+     npm cache clean --force
+
+────────────────────────────────────────────────────────────────────────────────
+
+✅ ÉTAPE 3 : BUILD ANDROID (Google Play Store)
+
+  Commande :
+  eas build --platform android --profile production
+
+  La build prendra 10-15 minutes.
+  Vous recevrez un lien AAB (Android App Bundle).
+
+  Vérifications :
+  [ ] Build complétée avec succès
+  [ ] Lien AAB disponible
+  [ ] Version code = 2 ou plus
+  [ ] Package name = com.deepfriedmeme.studio
+
+────────────────────────────────────────────────────────────────────────────────
+
+✅ ÉTAPE 4 : BUILD iOS (Apple App Store)
+
+  Commande :
+  eas build --platform ios --profile production
+
+  La build prendra 15-20 minutes.
+  Vous recevrez un lien IPA (iPhone App).
+
+  Vérifications :
+  [ ] Build complétée avec succès
+  [ ] Lien IPA disponible
+  [ ] Bundle identifier = com.deepfriedmeme.studio
+  [ ] Version = 2.0.0 ou plus
+
+────────────────────────────────────────────────────────────────────────────────
+
+✅ ÉTAPE 5 : TEST LOCAL (OPTIONNEL)
+
+  Android sur émulateur/device :
+  1. eas build --platform android --profile preview
+  2. Télécharger l'APK
+  3. adb install deep-fried-meme-studio.apk
+
+  iOS sur simulator (macOS uniquement) :
+  1. eas build --platform ios --profile preview2
+  2. Xcode → Product → Run
+
+─────────────────────────��──────────────────────────────────────────────────────
+
+✅ ÉTAPE 6 : SOUMETTRE À GOOGLE PLAY
+
+  Prérequis :
+  [ ] Compte Google Play Developer ($25 one-time)
+  [ ] App créée dans Play Console
+  [ ] Screenshots + description prêts
+  [ ] Privacy policy URL (obligatoire)
+  [ ] Service account key JSON (optionnel pour auto-submit)
+
+  Automatique :
+  eas submit --platform android --latest
+
+  Ou manuel :
+  1. Google Play Console → Your App → Release
+  2. Production → Upload AAB
+  3. Remplir les métadonnées
+  4. Submit for review
+
+  Délai de validation : 2-4 heures (généralement)
+
+────────────────────────────────────────────────────────────────────────────────
+
+✅ ÉTAPE 7 : SOUMETTRE À APPLE APP STORE
+
+  Prérequis :
+  [ ] Compte Apple Developer ($99/année)
+  [ ] App créée dans App Store Connect
+  [ ] Screenshots + description prêts
+  [ ] Privacy policy URL (obligatoire)
+  [ ] TestFlight beta testers (optionnel)
+  [ ] Apple ID + app-specific password
+
+  Automatique :
+  eas submit --platform ios --latest
+
+  Ou manuel :
+  1. App Store Connect → Your App → App Information
+  2. TestFlight → Build
+  3. Upload IPA via Transporter
+  4. Version Release → Submit for Review
+
+  Délai de validation : 24-48 heures (généralement)
+
+────────────────────────────────────────────────────────────────────────────────
+
+✅ ÉTAPE 8 : APRÈS PUBLICATION
+
+  [ ] App disponible sur Google Play
+  [ ] App disponible sur App Store
+  [ ] Vérifier les avis utilisateurs
+  [ ] Monitorer les crashes (Expo Dashboard)
+  [ ] Répondre aux feedback
+  [ ] Planifier les mises à jour
+
+────────────────────────────────────────────────────────────────────────────────
+
+📞 SUPPORT & RESSOURCES
+
+  Expo EAS : https://docs.expo.dev/eas/
+  Google Play Console : https://play.google.com/console
+  App Store Connect : https://appstoreconnect.apple.com
+  React Native : https://reactnative.dev
+  Troubleshooting : Voir PRODUCTION.md
+
+════════════════════════════════════════════════════════════════════════════════
+ Made with 🔥 by Copilot
+════════════════════════════════════════════════════════════════════════════════

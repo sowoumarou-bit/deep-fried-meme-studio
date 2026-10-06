@@ -1,0 +1,14 @@
+**/*.jks
+**/*.keystore
+**/*.p8
+**/*.p12
+**/*.key
+**/*.mobileprovision
+**/*.json
+node_modules/
+.git/
+.gitignore
+.DS_Store
+*.log
+dist/
+build/
