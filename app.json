@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Deep-Fried Mème Studio",
+    "slug": "deep-fried-meme-studio",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.deepfriedmeme.studio"
+    },
+    "android": {
+      "package": "com.deepfriedmeme.studio",
+      "adaptiveIcon": {
+        "backgroundColor": "#0d0d0d"
+      }
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
