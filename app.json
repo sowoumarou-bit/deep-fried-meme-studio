@@ -1,43 +1,42 @@
 {
   "expo": {
-    "name": "🔥 Deep-Fried Mème Studio",
+    "name": "Deep-Fried Mème Studio",
     "slug": "deep-fried-meme-studio",
     "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0d0d0d"
-    },
+    "owner": "sowoumarou-bit",
+    "privacy": "public",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.deepfriedmeme.studio",
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "Accès à la galerie pour choisir et enregistrer des mèmes",
-        "NSCameraRollAddOnlyAccessLevel": true
+        "NSPhotoLibraryUsageDescription": "Accès à la galerie pour choisir et enregistrer les créations de mèmes.",
+        "NSPhotoLibraryAddUsageDescription": "Enregistre les mèmes finaux dans votre galerie photo."
       }
     },
     "android": {
       "package": "com.deepfriedmeme.studio",
-      "adaptiveIcon": {
-        "backgroundColor": "#0d0d0d"
-      },
+      "versionCode": 2,
       "permissions": [
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
-      ]
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#0d0d0d",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      }
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "web": {
+      "bundler": "metro"
+    },
     "plugins": [
       [
         "expo-media-library",
         {
-          "photosPermission": "Accès à vos photos pour enregistrer les créations",
-          "savePhotosPermission": "Enregistrer des photos dans votre galerie"
+          "photosPermission": "L'application a besoin d'accéder à vos photos pour enregistrer vos créations.",
+          "savePhotosPermission": "L'application a besoin d'enregistrer des photos dans votre galerie."
         }
       ]
     ]
