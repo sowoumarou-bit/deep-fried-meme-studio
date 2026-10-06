@@ -1,22 +1,45 @@
 {
   "expo": {
-    "name": "Deep-Fried Mème Studio",
+    "name": "🔥 Deep-Fried Mème Studio",
     "slug": "deep-fried-meme-studio",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d0d0d"
+    },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.deepfriedmeme.studio"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.deepfriedmeme.studio",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Accès à la galerie pour choisir et enregistrer des mèmes",
+        "NSCameraRollAddOnlyAccessLevel": true
+      }
     },
     "android": {
       "package": "com.deepfriedmeme.studio",
       "adaptiveIcon": {
         "backgroundColor": "#0d0d0d"
-      }
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "assetBundlePatterns": [
       "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Accès à vos photos pour enregistrer les créations",
+          "savePhotosPermission": "Enregistrer des photos dans votre galerie"
+        }
+      ]
     ]
   }
 }

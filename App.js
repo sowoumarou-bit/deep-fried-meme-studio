@@ -12,14 +12,18 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 import ViewShot, { captureRef } from 'react-native-view-shot';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PREVIEW_SIZE = SCREEN_WIDTH - 32;
+
 const STICKER_SET = [
   '😂', '💀', '🔥', '💯', '👀', '😎', '🤣', '😭', '🤔', '👽',
   '💥', '⚡', '🌈', '✨', '💫', '🎯', '🏆', '👑', '💎', '🚀',
@@ -92,7 +96,7 @@ export default function App() {
   const [selectedStickerId, setSelectedStickerId] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordMessage, setRecordMessage] = useState('');
+  const [recordStatus, setRecordStatus] = useState('');
 
   const previewRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -114,22 +118,27 @@ export default function App() {
   }, [isRecording]);
 
   const pickImage = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert('Permission refusée', 'Autorisez l’accès à la galerie pour choisir une image.');
-      return;
-    }
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Permission refusée', 'Autorisez l'accès à la galerie pour choisir une image.');
+        return;
+      }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-      allowsEditing: true,
-      aspect: [1, 1],
-    });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsEditing: true,
+        aspect: [1, 1],
+      });
 
-    if (!result.canceled && result.assets?.[0]) {
-      setImageUri(result.assets[0].uri);
-      setExpanded('fry');
+      if (!result.canceled && result.assets?.[0]) {
+        setImageUri(result.assets[0].uri);
+        setExpanded('fry');
+      }
+    } catch (error) {
+      Alert.alert('Erreur', 'Impossible de charger l'image.');
+      console.error(error);
     }
   };
 
@@ -180,12 +189,13 @@ export default function App() {
     </View>
   );
 
-  const saveCurrentPreview = async (label = 'deep_fried_meme') => {
+  const exportPNG = async () => {
     if (!previewRef.current) {
-      Alert.alert('Aucune prévisualisation', 'Choisissez une image avant d’exporter.');
-      return null;
+      Alert.alert('Aucune image', 'Charge une image avant d'exporter.');
+      return;
     }
 
+    setIsExporting(true);
     try {
       const uri = await captureRef(previewRef, {
         format: 'png',
@@ -195,40 +205,44 @@ export default function App() {
 
       const permission = await MediaLibrary.requestPermissionsAsync();
       if (permission.status !== 'granted') {
-        Alert.alert('Permission refusée', 'Autorisez l’accès à la galerie pour enregistrer le rendu.');
-        return null;
+        Alert.alert('Permission refusée', 'Autorisez l'accès à la galerie.');
+        return;
       }
 
       await MediaLibrary.saveToLibraryAsync(uri);
-      Alert.alert('✅ Export terminé', `Votre mème a été enregistré dans votre galerie (${label}).`);
-      return uri;
+      Alert.alert('✅ Succès', 'Votre mème a été enregistré dans la galerie.');
+      setExpanded('export');
     } catch (error) {
+      Alert.alert('Erreur', 'L'export PNG n'a pas fonctionné.');
       console.error(error);
-      Alert.alert('Erreur', 'Le rendu de l’image n’a pas pu être enregistré.');
-      return null;
+    } finally {
+      setIsExporting(false);
     }
   };
 
-  const recordVideoLoop = async () => {
+  const recordFrameSequence = async () => {
     if (!previewRef.current) {
-      Alert.alert('Aucune image', 'Charge une image avant de lancer l’animation.');
+      Alert.alert('Aucune image', 'Charge une image avant d'enregistrer.');
       return;
     }
 
     setIsRecording(true);
-    setRecordMessage('Capture...');
+    setRecordStatus('Capture en cours...');
 
     try {
+      const frameCount = 18;
       const frameURIs = [];
-      const frames = 16;
-      for (let index = 0; index < frames; index += 1) {
+      const frameDelay = 80;
+
+      for (let i = 0; i < frameCount; i += 1) {
         const uri = await captureRef(previewRef, {
           format: 'png',
           quality: 1,
           result: 'tmpfile',
         });
         frameURIs.push(uri);
-        await new Promise((resolve) => setTimeout(resolve, 70));
+        setRecordStatus(`Capture ${i + 1}/${frameCount}...`);
+        await new Promise((resolve) => setTimeout(resolve, frameDelay));
       }
 
       const permission = await MediaLibrary.requestPermissionsAsync();
@@ -236,18 +250,21 @@ export default function App() {
         throw new Error('Permission refusée');
       }
 
-      for (let index = 0; index < frameURIs.length; index += 1) {
-        await MediaLibrary.saveToLibraryAsync(frameURIs[index]);
+      for (let i = 0; i < frameURIs.length; i += 1) {
+        await MediaLibrary.saveToLibraryAsync(frameURIs[i]);
       }
 
-      setRecordMessage(`${frameURIs.length} captures enregistrées`);
-      Alert.alert('🎬 Animation enregistrée', 'Une séquence de captures a été sauvegardée dans votre galerie.');
+      Alert.alert(
+        '🎬 Animation enregistrée',
+        `${frameCount} images sauvegardées dans la galerie. Utilisez une app comme "GIF Maker" ou "Stop Motion Studio" pour créer une vidéo animée.`
+      );
+      setRecordStatus('');
     } catch (error) {
+      Alert.alert('Erreur', 'L'enregistrement n'a pas fonctionné.');
       console.error(error);
-      Alert.alert('Erreur', 'L’enregistrement de la vidéo d’animation n’a pas pu être finalisé.');
+      setRecordStatus('');
     } finally {
       setIsRecording(false);
-      setTimeout(() => setRecordMessage(''), 1800);
     }
   };
 
@@ -364,7 +381,7 @@ export default function App() {
 
             <View style={styles.toggleRow}>
               <Pressable style={[styles.toggle, jpegArtifacts && styles.toggleActive]} onPress={() => setJpegArtifacts((value) => !value)}>
-                <Text style={styles.toggleText}>{jpegArtifacts ? '✓' : '○'} Artefacts JPEG</Text>
+                <Text style={styles.toggleText}>{jpegArtifacts ? '✓' : '○'} JPEG Art.</Text>
               </Pressable>
               <Pressable style={[styles.toggle, chromatic && styles.toggleActive]} onPress={() => setChromatic((value) => !value)}>
                 <Text style={styles.toggleText}>{chromatic ? '✓' : '○'} Aberration</Text>
@@ -421,10 +438,7 @@ export default function App() {
                     <Pressable
                       key={color}
                       onPress={() => setTextColor(color)}
-                      style={[
-                        styles.colorDot,
-                        { backgroundColor: color, borderWidth: textColor === color ? 3 : 1, borderColor: textColor === color ? '#fff' : '#333' },
-                      ]}
+                      style={[styles.colorDot, { backgroundColor: color, borderWidth: textColor === color ? 3 : 1, borderColor: textColor === color ? '#fff' : '#333' }]}
                     />
                   ))}
                 </View>
@@ -482,15 +496,20 @@ export default function App() {
           'Export',
           '💾',
           <View>
-            <Pressable style={styles.primaryButton} onPress={async () => saveCurrentPreview()}>
-              <Text style={styles.primaryButtonText}>📸 Sauvegarder PNG</Text>
+            <Pressable style={[styles.primaryButton, isExporting && styles.disabledButton]} onPress={exportPNG} disabled={isExporting}>
+              <Text style={styles.primaryButtonText}>{isExporting ? '⏳ Export...' : '📸 Sauvegarder PNG'}</Text>
             </Pressable>
 
-            <Pressable style={[styles.recordButton, isRecording && styles.recordButtonActive]} onPress={recordVideoLoop}>
-              <Text style={styles.recordButtonText}>{isRecording ? '⏳ ENREGISTREMENT...' : '🎬 Export animation'}</Text>
+            <Pressable style={[styles.recordButton, isRecording && styles.recordButtonActive]} onPress={recordFrameSequence} disabled={isRecording}>
+              <Text style={styles.recordButtonText}>{isRecording ? '⏳ REC...' : '🎬 Export animation'}</Text>
             </Pressable>
 
-            {recordMessage ? <Text style={styles.recordStatus}>{recordMessage}</Text> : null}
+            {recordStatus ? (
+              <View style={styles.statusBox}>
+                <ActivityIndicator size="small" color="#ff5c00" style={{ marginRight: 8 }} />
+                <Text style={styles.recordStatus}>{recordStatus}</Text>
+              </View>
+            ) : null}
           </View>
         )}
       </ScrollView>
@@ -657,11 +676,24 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontSize: 15,
   },
+  statusBox: {
+    marginTop: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2d2d2d',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   recordStatus: {
     color: '#ffb07f',
-    textAlign: 'center',
-    marginTop: 8,
     fontWeight: '700',
+    fontSize: 13,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   sliderRow: {
     flexDirection: 'row',
